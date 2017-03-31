@@ -94,5 +94,4 @@ public class MainActivity extends AppCompatActivity
         flow.setAdapter(adapter1);
     }
 
-    //https://github.com/zeke123/FlexboxLayoutDemo.git
 }
