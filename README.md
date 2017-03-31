@@ -1,170 +1,218 @@
-# FlexboxUtils
-Google在之前发布了一个叫做FlexboxLayout的控件，完全能够适配平时我们业务中自定义的布局流控件，而且有过之而无不及。因此在这个基础上我又针对这个控件进行了进一步的封装，基本能够满足平时大部分的业务需求，先上图
-![preview](https://github.com/Kaka252/FlexboxUtils/blob/master/screenshot/device-2017-03-28-181547.png?raw=true)
+## 简介
 
-# 继承BaseTagView
-定义一个TagView，继承BaseTagView，由于每一个tag的数据类型不确定，因此需要传入一个固定的数据类型满足实际需求
+Flexbox 是前端领域CSS的一种布局方案，可以简便、完整、响应式地实现各种页面布局，并且 React Native 也是使用的 Flex 布局。
+
+FlexboxLayout 是针对 Android 平台的，实现类似 Flexbox 布局方案的一个开源项目，开源地址：
+
+[https://github.com/google/flexbox-layout](https://github.com/google/flexbox-layout)
+
+
+## 实现效果
+
+
+<center>![这里写图片描述](http://img.blog.csdn.net/20170331134725319?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxNDAwNTMxNg==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
+</center>
+
+
+## 代码实现
+
+MainActivity.java
+
 ```
-public class StringTagView extends BaseTagView<String> {
+package com.zhoujian.flexboxdemo;
 
-    public StringTagView(Context context) {
-        this(context, null);
-    }
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.widget.TextView;
+import java.util.ArrayList;
+import java.util.List;
+import zhoujian.flexbox.interfaces.OnFlexboxSubscribeListener;
+import zhoujian.flexbox.widget.TagFlowLayout;
 
-    public StringTagView(Context context, @Nullable AttributeSet attrs) {
-        super(context, attrs, 0);
-    }
+public class MainActivity extends AppCompatActivity
+{
 
-    public StringTagView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
+    private TextView btnCount;
+    private TextView btnCount1;
+    private StringTagAdapter adapter;
+    private StringTagAdapter adapter1;
+    private List<String> sourceData;
+    private List<String> sourceData1;
+    private List<String> selectItems;
+    private List<String> selectItems1;
 
     @Override
-    public void setItem(String item) {
-        super.setItem(item);
-        textView.setText(item);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        initData();
+        initData1();
+        initViews();
+    }
+
+    private void initData() {
+        sourceData = new ArrayList<>();
+        sourceData.add("体育");
+        sourceData.add("财经");
+        sourceData.add("汽车");
+        sourceData.add("社会");
+        sourceData.add("搞笑");
+        sourceData.add("军事");
+        sourceData.add("历史");
+        sourceData.add("教育");
+        sourceData.add("数码");
+        sourceData.add("健康");
+        sourceData.add("旅游");
+        sourceData.add("美食");
+        sourceData.add("游戏");
+        sourceData.add("电影");
+        selectItems = new ArrayList<>();
+    }
+
+
+    private void initData1() {
+        sourceData1 = new ArrayList<>();
+        sourceData1.add("体育");
+        sourceData1.add("财经");
+        sourceData1.add("汽车");
+        sourceData1.add("社会");
+        sourceData1.add("搞笑");
+        sourceData1.add("军事");
+        sourceData1.add("历史");
+        sourceData1.add("教育");
+        sourceData1.add("数码");
+        sourceData1.add("健康");
+        sourceData1.add("旅游");
+        sourceData1.add("美食");
+        sourceData1.add("游戏");
+        sourceData1.add("电影");
+        selectItems1 = new ArrayList<>();
+    }
+
+
+    private void initViews() {
+        TagFlowLayout flowLayout = (TagFlowLayout) findViewById(R.id.flow_layout);
+        btnCount = (TextView) findViewById(R.id.btn_get_count);
+        adapter = new StringTagAdapter(this, sourceData, selectItems);
+        adapter.setOnSubscribeListener(new OnFlexboxSubscribeListener<String>() {
+            @Override
+            public void onSubscribe(List<String> selectedItem) {
+                btnCount.setText("已选择" + selectedItem.size() + "个" + "\n" + "选中的是：" + selectedItem.toString());
+            }
+        });
+        flowLayout.setAdapter(adapter);
+
+
+        TagFlowLayout flow = (TagFlowLayout) findViewById(R.id.flow);
+        btnCount1 = (TextView) findViewById(R.id.btn_get);
+        adapter1 = new StringTagAdapter(this, sourceData1, selectItems1);
+        adapter1.setOnSubscribeListener(new OnFlexboxSubscribeListener<String>() {
+            @Override
+            public void onSubscribe(List<String> selectedItem1) {
+                btnCount1.setText("已选择" + selectedItem1.size() + "个" + "\n" + "选中的是：" + selectedItem1.toString());
+            }
+        });
+        flow.setAdapter(adapter1);
     }
 }
+
 ```
 
-# 继承TagAdapter
-定义一个Adapter，继承TagAdapter，并实现相应的方法
+
+activity_main.xml
+
 ```
-public class StringTagAdapter extends TagAdapter<StringTagView, String> {
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.zhoujian.flexboxdemo.MainActivity">
 
-    StringTagAdapter(Context context, List<String> data) {
-        this(context, data, null);
-    }
 
-    StringTagAdapter(Context context, List<String> data, List<String> selectItems) {
-        super(context, data, selectItems);
-    }
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="20dp"
+        android:text="多选:"
+        android:textSize="18sp"
+        android:textStyle="bold"/>
 
-    /**
-     * 检查item和所选item是否一样
-     *
-     * @param view
-     * @param item
-     * @return
-     */
-    @Override
-    protected boolean checkIsItemSame(StringTagView view, String item) {
-        return TextUtils.equals(view.getItem(), item);
-    }
-
-    /**
-     * 检查item是否是空指针
-     *
-     * @return
-     */
-    @Override
-    protected boolean checkIsItemNull(String item) {
-        return TextUtils.isEmpty(item);
-    }
-
-    /**
-     * 添加标签
-     *
-     * @param item
-     * @return
-     */
-    @Override
-    protected StringTagView addTag(String item) {
-        StringTagView tagView = new StringTagView(getContext());
-        tagView.setPadding(20, 20, 20, 20);
-
-        TextView textView = tagView.getTextView();
-        textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-        textView.setGravity(Gravity.CENTER);
-
-        tagView.setItemDefaultDrawable(itemDefaultDrawable);
-        tagView.setItemSelectDrawable(itemSelectDrawable);
-        tagView.setItemDefaultTextColor(itemDefaultTextColor);
-        tagView.setItemSelectTextColor(itemSelectTextColor);
-        tagView.setItem(item);
-        return tagView;
-    }
-}
-```
-# 使用
-在xml中，你可以使用如下配置:
-```
-<resources>
-    <declare-styleable name="TagFlowLayout">
-        <attr name="showHighlight" format="boolean" /> // 是否选中高亮
-        <attr name="defaultDrawable" format="reference" /> // 默认标签背景
-        <attr name="selectDrawable" format="reference" /> // 选中标签背景
-        <attr name="defaultTextColor" format="color|reference"/> // 默认标签文字颜色
-        <attr name="selectTextColor" format="color|reference" /> // 选中标签文字颜色
-        <attr name="mode"> // 单选或者多选
-            <enum name="MULTI" value="0" /> // 默认多选
-            <enum name="SINGLE" value="1"/> // 单选
-        </attr>
-    </declare-styleable>
-</resources>
-```
-```
-    <zhouyou.flexbox.widget.TagFlowLayout
+    <zhoujian.flexbox.widget.TagFlowLayout
         android:id="@+id/flow_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:alignContent="flex_start"
         app:alignItems="center"
+        app:defaultDrawable="@drawable/bg_flow_unselect"
+        app:defaultTextColor="@color/app_green"
         app:dividerDrawable="@drawable/bg_flow_divider"
         app:flexDirection="row"
         app:flexWrap="wrap"
         app:justifyContent="flex_start"
-        app:showDivider="beginning|middle|end"
+        app:mode="MULTI"
         app:selectDrawable="@drawable/bg_flow_selected"
-        app:defaultDrawable="@drawable/bg_flow_unselect"
         app:selectTextColor="@android:color/white"
+        app:showDivider="beginning|middle|end"/>
+
+    <TextView
+        android:id="@+id/btn_get_count"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:text=""/>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="50dp"
+        android:text="单选:"
+        android:textSize="18sp"
+        android:textStyle="bold"/>
+
+    <zhoujian.flexbox.widget.TagFlowLayout
+        android:id="@+id/flow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:alignContent="flex_start"
+        app:alignItems="center"
+        app:defaultDrawable="@drawable/bg_flow_unselect"
         app:defaultTextColor="@color/app_green"
-        app:mode="SINGLE"/>
-```
-也可以使用Java代码进行属性配置
-```
-    TagFlowLayout flowLayout = (TagFlowLayout) findViewById(R.id.flow_layout);
-    flowLayout.setShowHighlight(false);
-    flowLayout.setItemDefaultDrawable(R.drawable.bg_flow_unselect);
-    flowLayout.setItemSelectDrawable(R.drawable.bg_flow_selected);
-    flowLayout.setItemDefaultTextColor(ContextCompat.getColor(this, R.color.app_green));
-    flowLayout.setItemSelectTextColor(Color.WHITE);
-    flowLayout.setMode(TagFlowLayout.MODE_SINGLE_SELECT);
-```
-# 回调
-可以使用如下回调来获取最终所选择的项目列表
-```
-    ...
-    adapter.setOnSubscribeListener(new OnFlexboxSubscribeListener<String>() {
-        @Override
-        public void onSubscribe(List<String> selectedItem) {
-        }
-    });
-```
-# 操作模式
-可以通过设置模式来控制标签的单选与多选操作
-```
-    ...
-    flowLayout.setMode(TagFlowLayout.MODE_SINGLE_SELECT);
-```
-# 选中高亮效果
-可以设置是否选中高亮，默认为选中高亮
-```
-    ...
-    flowLayout.setShowHighlight(false);
+        app:dividerDrawable="@drawable/bg_flow_divider"
+        app:flexDirection="row"
+        app:flexWrap="wrap"
+        app:justifyContent="flex_start"
+        app:mode="SINGLE"
+        app:selectDrawable="@drawable/bg_flow_selected"
+        app:selectTextColor="@android:color/white"
+        app:showDivider="beginning|middle|end"/>
+
+    <TextView
+        android:id="@+id/btn_get"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:text=""/>
+
+
+</LinearLayout>
+
 ```
 
-# 绑定数据到控件
-通过声明TagFlowLayout，并且调用setAdapter()方法来接收之前定义好的adapter即可
-```
-    ...
-    flowLayout.setAdapter(adapter);
-```
-# 切换、刷新数据
-在声明的adapter基础上，重新设置数据源和已选项，notifyDataSetChanged()方法即可完成数据刷新操作
-```
-    ...
-    adapter.setSource(data);
-    adapter.setSelectItems(selectItems);
-    adapter.notifyDataSetChanged();
-```
+
+
+
+
+
+
+
+
+
+
+
